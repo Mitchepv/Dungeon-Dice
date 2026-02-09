@@ -10,10 +10,10 @@ import SwiftUI
 struct ContentView: View {
     
     @State private var message = "Roll a dice"
-   
+    private let diceType =  [4,6,8,10,12,20,100]
     
     var body: some View {
-        VStack (spacing: 50) {
+        VStack {
            
             Text ("Dungeon Dice!")
                 .font(.largeTitle)
@@ -28,50 +28,21 @@ struct ContentView: View {
             
             Spacer()
             
-            
             Group{
-                HStack {
-                    Button ("4-sided") {
-                        rollDice(Side: 4)
+                ForEach( diceType , id: \.self ) { diceType in Button ("\(diceType)-sided") {
+                        rollDice(Side: diceType)
                     }
-                    
-                    Button ("6-sided") {
-                        rollDice(Side: 6)
-                    }
-                    
-                    Button ("8-sided") {
-                        rollDice(Side: 8)
-                    }
-        
                 }
-                
-                HStack {
-                    Button ("10-sided") {
-                        rollDice(Side: 10)
-                    }
-                    
-                    Button ("12-sided") {
-                        rollDice(Side: 12)
-                    }
-                    Button ("20-sided") {
-                        rollDice(Side: 20)
-                    }
-                    
-                }
-                
-                Button ("100-sided") {
-                    rollDice(Side: 100)
-                    }
-             
             }
             .font(.title2)
             .buttonStyle(.glassProminent)
             .tint(.red)
-            
-        
+           
+         
         }
         .padding()
     }
+    
     func rollDice (Side:Int) {
         let result = Int.random(in: 1...Side)
         message = "You rolled a \(result) on a \(Side)-sided die"
