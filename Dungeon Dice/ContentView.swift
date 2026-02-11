@@ -8,6 +8,18 @@
 import SwiftUI
 
 struct ContentView: View {
+    enum  Dice: Int, CaseIterable, Identifiable {
+        case four = 4, six = 6 , eight = 8, ten = 10 , twenty = 20 , Hundred = 100
+        
+      
+        
+        var id: Int {
+           self.rawValue
+        }
+        var roll: Int {
+            return Int.random(in: 1...self.rawValue)
+        }
+    }
     
     @State private var message = "Roll a dice"
     private let diceType =  [4,6,8,10,12,20,100]
@@ -28,25 +40,24 @@ struct ContentView: View {
             
             Spacer()
             
-            Group{
-                ForEach( diceType , id: \.self ) { diceType in Button ("\(diceType)-sided") {
-                        rollDice(Side: diceType)
+            LazyVGrid(columns: [GridItem(.adaptive(minimum: 100))]) {
+                ForEach( Dice.allCases ) { die  in Button ("\(die.rawValue)-sided") {
+                    
+                    message = "You rolled a \(die.roll) on a \(die)-sided die"
+                        }
                     }
-                }
+                    .font(.title2)
+                    .lineLimit(1)
+                    .fixedSize(horizontal: true, vertical: false)
+                    .buttonStyle(.glassProminent)
+                    .tint(.red)
             }
-            .font(.title2)
-            .buttonStyle(.glassProminent)
-            .tint(.red)
-           
          
         }
         .padding()
     }
     
-    func rollDice (Side:Int) {
-        let result = Int.random(in: 1...Side)
-        message = "You rolled a \(result) on a \(Side)-sided die"
-    }
+ 
 }
 
 #Preview {
