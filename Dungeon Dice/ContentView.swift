@@ -9,10 +9,9 @@ import SwiftUI
 
 struct ContentView: View {
     enum  Dice: Int, CaseIterable, Identifiable {
-        case four = 4, six = 6 , eight = 8, ten = 10 , twenty = 20 , Hundred = 100
+        case d4 = 4, d6 = 6 , d8 = 8, d10 = 10 , d20 = 20 , d100 = 100
         
-      
-        
+
         var id: Int {
            self.rawValue
         }
@@ -24,7 +23,8 @@ struct ContentView: View {
     @State private var message = "Roll a dice"
     @State private var animationTrigger = false
     @State private var isDoneTrig = true
-    private let diceType =  [4,6,8,10,12,20,100]
+    @State private var rolls : [Int] = []
+    private var grandTotal: Int {rolls.reduce (0, +)}
     
     var body: some View {
         VStack {
@@ -34,10 +34,38 @@ struct ContentView: View {
                 .fontWeight(.black)
                 .foregroundStyle(.red)
             
+            GroupBox {
+                ForEach( rolls, id: \.self) { roll in
+                    Text ("\(roll)")
+                        .frame(maxWidth: .infinity,alignment: .leading)
+                    Divider()
+                }
+               
+                HStack{
+                    Text ("TOTAL: \(grandTotal)")
+                        .font(.title2)
+                        .bold()
+                        .monospacedDigit()
+                        .contentTransition(.numericText())
+                        .animation(.default,value:grandTotal)
+                    Spacer()
+                    Button("Clear"){
+                        rolls.removeAll()
+                    }
+                    .buttonStyle(.glass)
+                    .tint(.red)
+                    .disabled(rolls.isEmpty)
+                    }
+                } label: {
+                        Text("Session Rolls:")
+                            .font(.title2)
+                            .bold()
+            }
+            
             Spacer()
             
            Text(message)
-                .font(.largeTitle)
+                .font(.title)
                 .multilineTextAlignment(.center)
                 .rotation3DEffect(isDoneTrig ? .degrees(360) : .degrees(0), axis: (x:1 , y:0, z: 0))
                 .onChange(of: animationTrigger) {
@@ -54,14 +82,17 @@ struct ContentView: View {
                 ForEach( Dice.allCases ) { die  in Button ("\(die.rawValue)-sided") {
                     
                     animationTrigger.toggle()
-                    message = "You rolled a \(die.roll) on a \(die)-sided die"
-                        }
+                    let roll = die.roll
+                    
+                    message = "You rolled a \(roll) on a \(die)-sided die."
+                    rolls.append(roll)
                     }
                     .font(.title2)
                     .lineLimit(1)
                     .fixedSize(horizontal: true, vertical: false)
                     .buttonStyle(.glassProminent)
                     .tint(.red)
+                }
             }
          
         }
